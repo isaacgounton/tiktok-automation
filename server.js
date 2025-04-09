@@ -11,16 +11,17 @@ app.use(bodyParser.json());
 const ig = new IgApiClient();
 
 async function postToInsta(username, password, caption, videoUrl, coverImageUrl) {
-    // Generate device and set location info
+    // Configure device and location info
     ig.state.generateDevice(username);
     ig.state.deviceString = 'android-30/11.0.3';
     ig.state.timezoneOffset = -14400; // Toronto timezone offset in seconds
     ig.state.language = 'en_CA';
     ig.state.locale = 'en_CA';
     ig.state.radio_type = 'wifi-none';
+    ig.state.userAgent = 'Instagram 219.0.0.12.117 Android (30/11.0.3; 420dpi; 1080x2400; samsung; SM-G991U1; o1s; exynos2100; en_CA; 346138365)';
     
     try {
-        await ig.simulate.preLoginFlow();
+        // Simplified login flow
         const loggedInUser = await ig.account.login(username, password);
         
         // Handle checkpoint challenge if needed
@@ -28,9 +29,6 @@ async function postToInsta(username, password, caption, videoUrl, coverImageUrl)
             await ig.challenge.auto(true); // Auto-complete challenge
             await ig.challenge.sendSecurityCode(ig.state.checkpoint.challenge.params.choice);
         }
-        
-        // Process session
-        await ig.simulate.postLoginFlow();
 
         const [videoBuffer, coverImageBuffer] = await Promise.all([
             downloadContent(videoUrl),
