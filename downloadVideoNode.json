@@ -1,0 +1,25 @@
+{
+    "meta": {
+      "templateCredsSetupCompleted": true,
+      "instanceId": "5e0001371cb6fca2400efb6e5807321d56f67a089c1619ad94618a44bf1289e0"
+    },
+    "nodes": [
+      {
+        "parameters": {
+          "url": "={{ $('Get TikTok').item.json.data.videos[0].play }}",
+          "responseFormat": "file",
+          "options": {}
+        },
+        "name": "Trim Video",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 1,
+        "position": [
+          1200,
+          580
+        ],
+        "id": "280b8093-ea2a-4f9f-87e0-6ead230fd846"
+      }
+    ],
+    "connections": {},
+    "pinData": {}
+  }

@@ -1,0 +1,255 @@
+{
+    "meta": {
+      "templateCredsSetupCompleted": true,
+      "instanceId": "5e0001371cb6fca2400efb6e5807321d56f67a089c1619ad94618a44bf1289e0"
+    },
+    "nodes": [
+      {
+        "parameters": {},
+        "id": "103e094c-caea-42e8-99a7-32099654fb7c",
+        "name": "When clicking \"Test workflow\"",
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          720,
+          320
+        ]
+      },
+      {
+        "parameters": {
+          "resource": "video",
+          "operation": "upload",
+          "title": "={{ $('Run Trim').item.json.truncatedCaption }}",
+          "regionCode": "US",
+          "categoryId": "27",
+          "binaryProperty": "=data",
+          "options": {}
+        },
+        "id": "feff31f2-afbb-42e7-8288-b97e5b88fc21",
+        "name": "YouTube",
+        "type": "n8n-nodes-base.youTube",
+        "typeVersion": 1,
+        "position": [
+          1700,
+          180
+        ],
+        "credentials": {
+          "youTubeOAuth2Api": {
+            "id": "htDnW2RjOGczyIIt",
+            "name": "YouTube account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "url": "https://tiktok-download-video1.p.rapidapi.com/userPublishVideo",
+          "options": {},
+          "headerParametersUi": {
+            "parameter": [
+              {
+                "name": "X-RapidAPI-Key",
+                "value": "your rapidapi key here"
+              },
+              {
+                "name": "X-RapidAPI-Host",
+                "value": "tiktok-download-video1.p.rapidapi.com"
+              }
+            ]
+          },
+          "queryParametersUi": {
+            "parameter": [
+              {
+                "name": "unique_id",
+                "value": "your tiktok username here"
+              },
+              {
+                "name": "count",
+                "value": "1"
+              },
+              {
+                "name": "cursor",
+                "value": "0"
+              }
+            ]
+          }
+        },
+        "name": "Get TikTok",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 1,
+        "position": [
+          1000,
+          180
+        ],
+        "id": "40d951c1-2393-4100-8310-146f3b94bf61"
+      },
+      {
+        "parameters": {
+          "fields": {
+            "values": [
+              {
+                "name": "captionEdit",
+                "stringValue": "={{ $('Get TikTok').item.json.data.videos[0].title }}"
+              }
+            ]
+          },
+          "include": "selected",
+          "options": {}
+        },
+        "id": "09b6d003-cdb9-4315-ae84-f31c95461524",
+        "name": "Trim Caption",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.2,
+        "position": [
+          1180,
+          360
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const items = $input.all();\nconst captionEdit = items[0]?.json?.captionEdit || \"\";\nconst truncatedCaption = captionEdit.slice(0, 99);\n\nreturn { truncatedCaption };\n"
+        },
+        "id": "2d4940da-925b-4a06-8f01-c6287e8cf0cd",
+        "name": "Run Trim",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1360,
+          200
+        ]
+      },
+      {
+        "parameters": {
+          "url": "={{ $('Get TikTok').item.json.data.videos[0].play }}",
+          "responseFormat": "file",
+          "options": {}
+        },
+        "name": "Trim Video",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 1,
+        "position": [
+          1520,
+          380
+        ],
+        "id": "6637e34f-a457-465c-a434-30583570aeb7"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://crystalline-strong-plum.glitch.me/postToInstagram",
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "username",
+                "value": "your username here"
+              },
+              {
+                "name": "password",
+                "value": "your password here"
+              },
+              {
+                "name": "videoUrl",
+                "value": "={{ $('Get TikTok').item.json.data.videos[0].play }}"
+              },
+              {
+                "name": "coverImageUrl",
+                "value": "={{ $('Get TikTok').item.json.data.videos[0].cover }}"
+              },
+              {
+                "name": "caption",
+                "value": "={{ $('Get TikTok').item.json.data.videos[0].title }}"
+              }
+            ]
+          },
+          "options": {
+            "allowUnauthorizedCerts": false,
+            "response": {
+              "response": {}
+            },
+            "timeout": 60000
+          }
+        },
+        "id": "388a5b4b-4087-4bec-b262-b0b015ae7367",
+        "name": "Instagram Posting",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "position": [
+          1920,
+          380
+        ],
+        "executeOnce": false,
+        "retryOnFail": false,
+        "maxTries": 2,
+        "alwaysOutputData": true
+      }
+    ],
+    "connections": {
+      "When clicking \"Test workflow\"": {
+        "main": [
+          [
+            {
+              "node": "Get TikTok",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "YouTube": {
+        "main": [
+          [
+            {
+              "node": "Instagram Posting",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get TikTok": {
+        "main": [
+          [
+            {
+              "node": "Trim Caption",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Trim Caption": {
+        "main": [
+          [
+            {
+              "node": "Run Trim",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Run Trim": {
+        "main": [
+          [
+            {
+              "node": "Trim Video",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Trim Video": {
+        "main": [
+          [
+            {
+              "node": "YouTube",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "pinData": {}
+  }
