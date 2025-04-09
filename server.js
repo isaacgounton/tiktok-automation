@@ -11,7 +11,25 @@ app.use(bodyParser.json());
 const ig = new IgApiClient();
 
 async function postToInsta(username, password, caption, videoUrl, coverImageUrl) {
-    ig.state.generateDevice(username);
+    // Set a consistent device and location
+    const deviceId = `android-${Math.random().toString(36).slice(2, 10)}`;
+    ig.state.deviceId = deviceId;
+    ig.state.deviceString = 'android-30/11.0.3';
+    ig.state.phoneId = deviceId;
+    ig.state.uuid = deviceId;
+    ig.state.adid = deviceId;
+    ig.state.build = 'Samsung Galaxy S21';
+    
+    // Set location to Canada
+    ig.state.proxyUrl = '';
+    ig.state.cookieStore.state.location = {
+        latitude: 43.6532, // Toronto coordinates
+        longitude: -79.3832,
+        city: 'Toronto',
+        country: 'Canada',
+        timezone: 'America/Toronto',
+        language: 'en_CA'
+    };
     
     try {
         await ig.simulate.preLoginFlow();
