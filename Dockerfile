@@ -14,7 +14,7 @@ USER appuser
 COPY --chown=appuser:appgroup package*.json ./
 
 # Install dependencies
-RUN npm ci --production
+RUN npm install --production
 
 # Copy application files with explicit ownership
 COPY --chown=appuser:appgroup . .
